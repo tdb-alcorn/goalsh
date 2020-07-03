@@ -10,6 +10,7 @@ import time
 
 goals_dir = os.path.join(os.path.expanduser('~'), '.goals')
 goals_file = os.path.join(goals_dir, 'goals.json')
+current_goal_file = os.path.join(goals_dir, 'current_goal.txt')
 
 
 class Goal:
@@ -156,6 +157,11 @@ def main():
     if current is None:
         # TODO victory
         print("All goals finished!")
+        with open(current_goal_file, 'w+') as f:
+            f.write('')
+    else:
+        with open(current_goal_file, 'w+') as f:
+            f.write('[' + current.text + '] ')
 
     write_goals(goals, current)
 
