@@ -8,3 +8,5 @@ local cg='$(current_goal)'
 
 export PS1="${cg}${PS1}"
 
+alias goal="/home/tom/dev/goalsh/goal.py"
+alias goal="python3 /home/tom/dev/goalsh/goal.py"
