@@ -16,12 +16,17 @@ current_goal_file = os.path.join(goals_dir, 'current_goal.txt')
 class Goal:
     def __init__(self, parent: str, text: str, done: bool,
             created_at: datetime.datetime, completed_at: datetime.datetime):
-        # TODO add created_at, completed_at timestamps
         self.parent = parent
         self.text = text
         self.done = done
         self.created_at = created_at
         self.completed_at = completed_at
+
+    def __repr__(self) -> str:
+        s = '{} - created at {}'.format(self.text, self.created_at.isoformat())
+        if self.done:
+            s += ' - completed at {}'.format(self.completed_at.isoformat())
+        return s
 
     def __eq__(self, other) -> bool:
         if type(other) is not Goal:
@@ -137,7 +142,57 @@ def pop(goals: 'Dict[str, Goal]', current: Goal) -> Goal:
     return goals[current.parent]
 
 
+def status(goals: 'Dict[str, Goal]', current: Goal):
+    c = current
+    if c is None:
+        print('Goal stack is empty.')
+        return
+    print('* ' + str(c))
+    while c.parent is not None:
+        c = goals[c.parent]
+        print('  ' + str(c))
+
+
+def parse_args() -> 'Tuple[str, str]':
+    '''parse_args returns an (action, goal_str) pair'''
+    if len(sys.argv) == 1:
+        usage()
+        sys.exit(1)
+    elif sys.argv[1] == '--help' or sys.argv[1] == '-h':
+        usage()
+        sys.exit(0)
+
+    action = sys.argv[1]
+
+    if action == 'pop':
+        return action, None
+    elif action == 'status':
+        return action, None
+    elif action == 'push':
+        if len(sys.argv) < 3:
+            usage()
+            sys.exit(1)
+        return action, sys.argv[2]
+
+    usage()
+    sys.exit(1)
+
+def usage():
+    s = 'Usage: goal <command> [<arg>]'
+    s += '\n'
+    s += '\nGoal tracks a stack of goals and modifies your prompt to show the current goal on top of the stack.'
+    s += '\n'
+    s += '\nAvailable commands:'
+    s += '\n    push -- Push a new goal onto the stack'
+    s += '\n    pop --- Pop the current goal off the stack, making the parent current'
+    s += '\n    status  Show the full stack'
+    s += '\n'
+
+    print(s)
+
 def main():
+    action, arg = parse_args()
+
     ensure_goals_file_exists()
 
     d = read_goals()
@@ -146,17 +201,17 @@ def main():
     if current is not None:
         current = goals[current]
 
-    action = sys.argv[1]
-
     if action == 'push':
-        arg = sys.argv[2]
         current = push(goals, current, arg)
     elif action == 'pop':
         current = pop(goals, current)
+    elif action == 'status':
+        status(goals, current)
 
     if current is None:
-        # TODO victory
-        print("All goals finished!")
+        if action == 'pop':
+            # victory
+            print("All goals finished. Time for cake!")
         with open(current_goal_file, 'w+') as f:
             f.write('')
     else:
