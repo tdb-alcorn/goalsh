@@ -18,11 +18,12 @@ $ goal push "add feature X"
 * add feature X - created at ...
 [add feature X] $ goal pop
 All goals finished. Time for cake!
+```
 
 
 ## Install
 
-Clone this rep and run `./install.sh`. Then add the following line to your .bashrc file:
+Clone this repo and run `./install.sh`. Then add the following line to your .bashrc file:
 
 ```
 source ~/.goals/current_goal.sh
